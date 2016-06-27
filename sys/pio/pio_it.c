@@ -85,8 +85,8 @@ static uint32_t numSources;
 //         Local functions
 //------------------------------------------------------------------------------
 
-static void PIOA_IT_InterruptHandler(void) __attribute__ ((naked));
-static void PIOB_IT_InterruptHandler(void) __attribute__ ((naked));
+static void PIOA_IT_InterruptHandler(void) __attribute__ ((interrupt ("IRQ")));
+static void PIOB_IT_InterruptHandler(void) __attribute__ ((interrupt ("IRQ")));
 
 //------------------------------------------------------------------------------
 /// Handles all interrupts on the given PIO controller.
@@ -105,7 +105,7 @@ void PioInterruptHandler(uint32_t id, AT91S_PIO *pPio)
     // Check pending events
     if (status != 0) {
 
-        TRACE_DEBUG("PIO interrupt on PIO controller #%d\n\r", id);
+        TRACE_DEBUG("PIO interrupt on PIO controller #%lu\n\r", id);
 
         // Find triggering source
         i = 0;
@@ -120,7 +120,7 @@ void PioInterruptHandler(uint32_t id, AT91S_PIO *pPio)
                 // Source has PIOs whose statuses have changed
                 if ((status & pSources[i].pPin->mask) != 0) {
 
-                    TRACE_DEBUG("Interrupt source #%d triggered\n\r", i);
+                    TRACE_DEBUG("Interrupt source #%lu triggered\n\r", i);
 
                     pSources[i].handler(pSources[i].pPin);
                     status &= ~(pSources[i].pPin->mask);
@@ -225,7 +225,7 @@ void PIO_ConfigureIt(const Pin *pPin, void (*handler)(const Pin *))
            "-F- PIO_ConfigureIt: Increase MAX_INTERRUPT_SOURCES\n\r");
 
     // Define new source
-    TRACE_DEBUG("PIO_ConfigureIt: Defining new source #%d.\n\r",  numSources);
+    TRACE_DEBUG("PIO_ConfigureIt: Defining new source #%lu.\n\r",  numSources);
 
     pSource = &(pSources[numSources]);
     pSource->pPin = pPin;

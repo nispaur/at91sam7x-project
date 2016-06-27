@@ -331,9 +331,9 @@
 //         Global Functions
 //------------------------------------------------------------------------------
 
-extern void          TRACE_DumpFrame(uint8_t *pFrame, uint32_t size);
+extern void    TRACE_DumpFrame(uint8_t *pFrame, uint32_t size);
 
-extern void          TRACE_DumpMemory(uint8_t *pBuffer, uint32_t size, uint32_t address);
+extern void    TRACE_DumpMemory(uint8_t *pBuffer, uint32_t size, uint32_t address);
 
 extern uint8_t TRACE_GetInteger(uint32_t *pValue);
 

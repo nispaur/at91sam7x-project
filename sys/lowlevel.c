@@ -30,14 +30,14 @@ void print_trace(void) {
 
 // Fonction appelée en cas de data abort
 void dataAbortHandler(void) {
-	register uint64_t *lnk_ptr;
+	register unsigned int lnk_ptr;
 
 	__asm__ __volatile__ (
 	"sub lr, lr, #8\n"
 	"mov %0, lr" : "=r" (lnk_ptr)
 	);
 	while(1);
-	printf("\n!!! Data abort at address 0x%08lX\n",lnk_ptr);
+	printf("\n!!! Data abort at address 0x%08X\n", lnk_ptr);
 	while(1);
 }
 

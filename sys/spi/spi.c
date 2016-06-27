@@ -34,7 +34,7 @@
 #include "spi.h"
 #include <util/led.h>
 
-uint8_t npcs; // Chip select actuel
+// static uint8_t npcs; // Chip select actuel
 
 /* Modifie le PCS du SPI sur demande */
 void spi_chipselect(int npcs) {
@@ -187,3 +187,4 @@ uint8_t SPI_ReadBuffer(AT91S_SPI *spi, void *buffer, uint32_t length) {
     // No free bank
     return 0;
 }
+

@@ -14,10 +14,10 @@ void aic_init(void) {
     AT91C_BASE_AIC->AIC_DCR = AT91C_AIC_DCR_PROT;
 }
 
-void aic_irqsetup(int src, int conf, void (*irqhandler)(void) ) {
+void aic_irqsetup(int src, int conf, void (*irqhandler)(void)) {
 	aic = AT91C_BASE_AIC;
 	aic->AIC_IDCR = 1<<src; 					// Desactivation de l'interruption sur la source
-	aic->AIC_SVR[src] = irqhandler; 			// Mise en place du handler 
+	aic->AIC_SVR[src] = (AT91_REG)irqhandler; 	// Mise en place du handler 
 	aic->AIC_SMR[src] = conf;
 	aic->AIC_ICCR = 1<<src; 					// Raz des irq anterieures
 	aic->AIC_EOICR = 0xf00;						// Aquittement des itr anterieures

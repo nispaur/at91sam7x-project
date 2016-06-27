@@ -81,5 +81,7 @@ extern void PIO_DisableIt(const Pin *pPin);
 
 extern void PIO_IT_InterruptHandler(void);
 
+void PioInterruptHandler(uint32_t id, AT91S_PIO *pPio);
+
 #endif //#ifndef PIO_IT_H
 
