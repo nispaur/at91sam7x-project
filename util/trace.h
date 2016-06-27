@@ -83,7 +83,7 @@
 #if defined(TRACE_DBGU)
 #include <dbgu/dbgu.h>
 #else
-#include <usart.h>
+#include <sys/usart/usart.h>
 #endif
 
 //------------------------------------------------------------------------------

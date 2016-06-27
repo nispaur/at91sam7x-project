@@ -79,9 +79,10 @@ TARGET = main
 # List C source files here. (C dependencies are automatically generated.)
 # use file-extension c for "c-only"-files
 SRC  = src/$(TARGET).c
-SRC += $(addprefix src/, debug.c draw.c lcd.c sdmmc.c usart.c fileio.c joybt.c menu.c)
-SRC += $(addprefix util/, led.c stdio.c trace.c string.c math.c)
-SRC += $(addprefix sys/, pio/pio.c pio/pio_it.c timer/tc.c irq/aic.c spi/spi.c lowlevel.c)
+# PLACE YOUR SOURCE FILES vvv
+SRC += $(addprefix src/, ) 
+SRC += $(addprefix util/, debug.c led.c stdio.c trace.c string.c math.c)
+SRC += $(addprefix sys/, usart/usart.c pio/pio.c pio/pio_it.c timer/tc.c irq/aic.c spi/spi.c lowlevel.c)
 SRC += $(wildcard olimex/debugheaders/*.c)
 #SRC += lib/fatfs/ff.c lib/fatfs/diskio.c lib/fatfs/option/unicode.c lib/fatfs/option/syscall.c
 # SRC += syscalls.c

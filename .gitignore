@@ -1,5 +1,6 @@
 # Source directory
 src/
+!src/main.c
 
 .dep/
 *.o

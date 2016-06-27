@@ -5,9 +5,7 @@
 #define READ_REGISTER(var,reg) __asm volatile("mov %[result], " TOSTRING(reg) "\n\t" : [result] "=r" (var))
 
 #include <stdio.h>
-#include <sys/pio/pio_it.h>
-#include <sys/irq/aic.h>
-#include <joybt.h>
+#include <sys/usart/usart.h>
 
 
 void lowlevelinit(void);
@@ -47,10 +45,5 @@ void dataAbortHandler(void) {
 void lowlevelinit(void) {
 	InitUSART0();
 
-	// aic_init();
-	// PIO_InitializeInterrupts(5);
-
-	joy_setup();
-	// joy_setupirq();
-	// joy_enableirq();
+	// Joystick / AIC / PIO Initialisaiton goes here
 }
