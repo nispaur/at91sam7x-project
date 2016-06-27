@@ -1,0 +1,25 @@
+# Source directory
+src/
+
+.dep/
+*.o
+*.d
+
+# Binaries and symbol files
+*.lst
+*.lss
+*.map
+*.sym
+*.elf
+*.bin
+
+# Sublime Text Project files
+*.sublime-project
+*.sublime-workspace
+
+# GDB History log
+.gdb_history
+
+# Files being edited
+*.swp
+~
