@@ -25,7 +25,7 @@ void print_trace(void) {
 	READ_REGISTER(lr, lr);
 	READ_REGISTER(pc, pc);
 	READ_REGISTER(fp, fp);
-	printf("TRACE [lr=%8x, pc=%8x, fp=%8x]\n",lr,pc,fp);
+	//printf("TRACE [lr=%8x, pc=%8x, fp=%8x]\n",lr,pc,fp);
 }
 
 // Fonction appelée en cas de data abort
@@ -34,16 +34,12 @@ void dataAbortHandler(void) {
 
 	__asm__ __volatile__ (
 	"sub lr, lr, #8\n"
-	"mov %0, lr" : "=r" (lnk_ptr)
+	"mov %0, lr" : "=r" (lnk_ptr) 
 	);
-	while(1);
-	printf("\n!!! Data abort at address 0x%08X\n", lnk_ptr);
 	while(1);
 }
 
 // Fonction fourre tout qui initialise pas mal de trucs utiles.
 void lowlevelinit(void) {
-	InitUSART0();
-
 	// Joystick / AIC / PIO Initialisaiton goes here
 }

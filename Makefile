@@ -79,16 +79,18 @@ TARGET = main
 # List C source files here. (C dependencies are automatically generated.)
 # use file-extension c for "c-only"-files
 SRC  = src/$(TARGET).c
-# PLACE YOUR SOURCE FILES vvv
+
+# Place extra source files from src/ that need to be compiled with main.c here:
 SRC += $(addprefix src/, ) 
-SRC += $(addprefix util/, debug.c led.c stdio.c trace.c string.c math.c)
-SRC += $(addprefix sys/, usart/usart.c pio/pio.c pio/pio_it.c timer/tc.c irq/aic.c spi/spi.c lowlevel.c)
+
+# Place utility libraries (stdio.c, math.c..) here:
+SRC += $(addprefix util/, )
+
+# Place system libraries (pio/pio.c, spi/spi.c..) here:
+SRC += $(addprefix sys/, lowlevel.c)
+
+# Debug headers for GDB Dashboard 
 SRC += $(wildcard olimex/debugheaders/*.c)
-#SRC += lib/fatfs/ff.c lib/fatfs/diskio.c lib/fatfs/option/unicode.c lib/fatfs/option/syscall.c
-# SRC += syscalls.c
-# SRC += swi_handler_user.c
-# SRC += rprintf.c
-# SRC += common/Cstartup_SAM7.c
 
 # List C source files here which must be compiled in ARM-Mode.
 # use file-extension c for "c-only"-files
@@ -114,7 +116,7 @@ ASRC =
 
 # List Assembler source files here which must be assembled in ARM-Mode..
 ASRCARM  = sys/reset.S
-ASRCARM += $(addprefix lib/gcc/, __aeabi_uidiv.S uldivmod.S)
+#ASRCARM += $(addprefix lib/gcc/, __aeabi_uidiv.S uldivmod.S)
 #ASRCARM += common/swi_handler.S
 
 ## Output format. (can be ihex or binary or both)
