@@ -27,31 +27,33 @@ Placer dans ce dossier les sources du programme (fichiers *.c ou .S).
 # Compilation
 
 ## Sources assembleur ARM (.S)
-Par défaut, le Makefile compile et link tous les fichiers assembleur .S présents dans src/. Pour changer ce comportement, éditer les variables `ASRCARM` du [`Makefile`][raw]:
 
-```
+Par défaut, le Makefile compile et link toutes les sources assembleur (fichiers .S) présentes dans src/. Pour changer ce comportement, modifier les variables `ASRCARM` du [`Makefile`][makefile]:
+
+```Makefile
 # Fichier reset.S, indispensable au démarrage de la carte
 ASRCARM = sys/reset.S
 
-# Compile automatiquement tous les fichiers .S présents dans src/
-ASRCARM += $(wildcard src/*.S)
+# Compile automatiquement tous les fichiers .S présents dans src/ (commenté ici)
+# ASRCARM += $(wildcard src/*.S)
 
 # Selection manuelle, ici uniquement src/{fileX,fileY,fileZ}.c
 ASRCARM += $(addprefix src/, fileX.c fileY.c fileZ.c)
 ```
+
 ## Sources C
+
 Idem, en éditant la variable `SRC` du [`Makefile`][makefile]:
 
-```
+```Makefile
 # Compile automatiquement tous les fichiers .c dans src/
-SRC += $(wildcard src/*.c) 
+# SRC += $(wildcard src/*.c) 
 
 # Selection manuelle, compile uniquement src/{fileX,fileY,fileZ}.c
 SRC += $(addprefix src/, fileX.c fileY.c fileZ.c)
 ```
-Une fois le [`Makefile`][makefile] configuré, compiler l'executable au format `.elf` avec la commande:
-	
-	make
+
+Une fois le [`Makefile`][makefile] configuré, compiler l'executable au format `.elf` avec la commande `make`
 
 > Pour plus d'informations concernant la compilation et l'execution du programme, consulter le manuel utilisateur de GDB Dashboard.
 
