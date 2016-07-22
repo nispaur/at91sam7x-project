@@ -14,12 +14,14 @@ src/
 *.elf
 *.bin
 
-# Sublime Text Project files
+# Sublime Text / Atom / Kate project files
 *.sublime-project
 *.sublime-workspace
+*.kateproject
 
-# GDB History log
+# GDB Files
 .gdb_history
+.gdbinit
 
 # Files being edited
 *.swp
