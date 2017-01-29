@@ -1,7 +1,7 @@
 # Hey Emacs, this is a -*- makefile -*-
 #
-# WinARM template makefile 
-# by Martin Thomas, Kaiserslautern, Germany 
+# WinARM template makefile
+# by Martin Thomas, Kaiserslautern, Germany
 # <eversmith@heizung-thomas.de>
 #
 # based on the WinAVR makefile written by Eric B. Weddington, Jörg Wunsch, et al.
@@ -39,71 +39,44 @@
 # - 24. Apr. 2007  - added "both" option for format (.bin and .hex)
 # - 20. Aug. 2007  - extraincdirs in asflags, passing a "board"-define
 
+# Target file name (without extension).
+TARGET = main
 
 # Toolchain prefix (i.e arm-elf -> arm-elf-gcc.exe)
-#TCHAIN = arm-elf
 TCHAIN = arm-none-eabi
-
-#FLASH_TOOL = UVISION
-FLASH_TOOL = OPENOCD
 
 #USE_THUMB_MODE = YES
 USE_THUMB_MODE = NO
 
 # MCU name, submodel and board
 MCU      = arm7tdmi
-#SUBMDL   = AT91SAM7S
-#BOARD    = ATMEL_AT91SAM7S_EK
 SUBMDL   = at91sam7x256
 BOARD    = OLIMEX_SAM7_P
 
-## not supported in this example:
-## Create ROM-Image (final)
-#RUN_MODE=ROM_RUN
-## Create RAM-Image (debugging) - not used in this example
+## Create RAM-Image (debugging)
 RUN_MODE=RAM_RUN
 
-## Exception-Vector placement only supported for "ROM_RUN"
-## (placement settings ignored when using "RAM_RUN")
-## - Exception vectors in ROM:
-#VECTOR_LOCATION=VECTORS_IN_ROM
-## - Exception vectors in RAM:
-VECTOR_LOCATION=VECTORS_IN_RAM
-
 # Trace level debug (5)
-TRACE_LEVEL=5 
+TRACE_LEVEL=5
 
-# Target file name (without extension).
-TARGET = main
 
 # List C source files here. (C dependencies are automatically generated.)
 # use file-extension c for "c-only"-files
-SRC  = src/$(TARGET).c
+#SRC  = src/$(TARGET).c
+SRC =
 
 # Place extra source files from src/ that need to be compiled with main.c here:
-SRC += $(addprefix src/, ) 
+# SRC += $(addprefix src/, )
 
 # Place utility libraries (stdio.c, math.c..) here:
-SRC += $(addprefix util/, )
+# SRC += $(addprefix util/, )
 
 # Place system libraries (pio/pio.c, spi/spi.c..) here:
-SRC += $(addprefix sys/, lowlevel.c)
+# SRC += $(addprefix sys/, lowlevel.c)
 
-# Debug headers for GDB Dashboard 
-SRC += $(wildcard olimex/debugheaders/*.c)
+# Debug structs for GDB Dashboard
+CDEBUGSRC = $(wildcard sys/debug/*.c)
 
-# List C source files here which must be compiled in ARM-Mode.
-# use file-extension c for "c-only"-files
-SRCARM = 
-
-# List C++ source files here.
-# use file-extension cpp for C++-files (use extension .cpp)
-CPPSRC = 
-
-# List C++ source files here which must be compiled in ARM-Mode.
-# use file-extension cpp for C++-files (use extension .cpp)
-#CPPSRCARM = $(TARGET).cpp
-CPPSRCARM = 
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -112,30 +85,35 @@ CPPSRCARM =
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ASRC = 
+# ASRC = src/$(TARGET).S
+ASRC =
+
+# Ajouter vos sources assembleur ici (par defaut main.S)
+# Par exemple pour ajouter truc.S et truc2.S situés dans le répertoire src/
+# ASRC += $(addprefix, src/, truc.S truc2.S)
+#
+# Pour ajouter tous les fichiers .S du répertoire src/ (comportement par defaut)
+# Attention, compile tous les fichiers présents dans ce répertoire !
+ASRC += $(wildcard src/*.S)
 
 # List Assembler source files here which must be assembled in ARM-Mode..
-ASRCARM  = sys/reset.S
-#ASRCARM += $(addprefix lib/gcc/, __aeabi_uidiv.S uldivmod.S)
-#ASRCARM += common/swi_handler.S
+ASRCARM = sys/reset.S sys/irqHandler.S
 
 ## Output format. (can be ihex or binary or both)
 ## (binary i.e. for openocd and SAM-BA, hex i.e. for lpc21isp and uVision)
-#FORMAT = ihex
 FORMAT = binary
-#FORMAT = both
 
-# Optimization level, can be [0, 1, 2, 3, s]. 
+# Optimization level, can be [0, 1, 2, 3, s].
 # 0 = turn off optimization. s = optimize for size.
 # (Note: 3 is not always the best optimization level. See avr-libc FAQ.)
 OPT = 0
-#OPT = 0
 
 # Debugging format.
 # Native formats for AVR-GCC's -g are stabs [default], or dwarf-2.
 # AVR (extended) COFF requires stabs, plus an avr-objcopy run.
 #DEBUG = stabs
-DEBUG = dwarf-2
+# gdb with -g3 debugging information level (includes all macros definitions)
+DEBUG = gdb3
 
 # List any extra directories to look for include files here.
 #     Each directory must be seperated by a space.
@@ -149,11 +127,10 @@ EXTRA_LIBDIRS = ./common
 LINKERSCRIPTPATH = .
 
 ## Using the Atmel AT91_lib produces warning with
-## the default warning-levels. 
+## the default warning-levels.
 ## yes - disable these warnings; no - keep default settings
 #AT91LIBNOWARN = yes
 AT91LIBNOWARN = no
-
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
@@ -163,7 +140,7 @@ AT91LIBNOWARN = no
 CSTANDARD = -std=c99
 
 # Place -D or -U options for C here
-CDEFS =  -D$(RUN_MODE) 
+CDEFS =  -D$(RUN_MODE)
 
 # Place -I options here
 CINCS =
@@ -184,9 +161,9 @@ ADEFS += -D$(SUBMDL) -D$(BOARD) -D__ASSEMBLY__ -DTRACE_LEVEL=$(TRACE_LEVEL)
 ifeq ($(USE_THUMB_MODE),YES)
 THUMB    = -mthumb
 THUMB_IW = -mthumb-interwork
-else 
-THUMB    = 
-THUMB_IW = 
+else
+THUMB    =
+THUMB_IW =
 endif
 
 #  -g*:          generate debugging information
@@ -197,32 +174,24 @@ endif
 #    -adhlns...: create assembler listing
 #
 # Flags for C and C++ (arm-elf-gcc/arm-elf-g++)
-CFLAGS = -g$(DEBUG) -g3
+CFLAGS = -g$(DEBUG)
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
-CFLAGS += -Wall -Wcast-align -Wimplicit 
-CFLAGS += -Wpointer-arith -Wswitch 
-CFLAGS += -ffunction-sections -fdata-sections -fno-common 
-CFLAGS += -Wredundant-decls -Wreturn-type -Wshadow -Wunused 
+CFLAGS += -Wall -Wcast-align -Wimplicit
+CFLAGS += -Wpointer-arith -Wswitch
+CFLAGS += -ffunction-sections -fdata-sections -fno-common
+CFLAGS += -Wredundant-decls -Wreturn-type -Wshadow -Wunused
 CFLAGS += -mno-unaligned-access -fmessage-length=0 -fomit-frame-pointer
-CFLAGS += -Wa,-adhlns=$(subst $(suffix $<),.lst,$<) 
-CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS)) 
+CFLAGS += -Wa,-adhlns=$(subst $(suffix $<),.lst,$<)
+CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
 # flags only for C
-CONLYFLAGS += -Wnested-externs 
+CONLYFLAGS += -Wnested-externs
 CONLYFLAGS += $(CSTANDARD)
-
-ifneq ($(AT91LIBNOWARN),yes)
-#AT91-lib warnings with:
-CFLAGS += -Wcast-qual
-CONLYFLAGS += -Wmissing-prototypes 
-CONLYFLAGS += -Wstrict-prototypes
-CONLYFLAGS += -Wmissing-declarations
-endif
 
 # flags only for C++ (arm-elf-g++)
 # CPPFLAGS = -fno-rtti -fno-exceptions
-CPPFLAGS = 
+CPPFLAGS =
 
 # Assembler flags.
 #  -Wa,...:    tell GCC to pass this to the assembler.
@@ -231,67 +200,18 @@ CPPFLAGS =
 ASFLAGS = $(ADEFS) -D__ASSEMBLY__ -Wa,-adhlns=$(<:.S=.lst),-g$(DEBUG)
 ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
-
-#Additional libraries.
-
-# Extra libraries
-#    Each library-name must be seperated by a space.
-#    To add libxyz.a, libabc.a and libefsl.a: 
-#    EXTRA_LIBS = xyz abc efsl
-#EXTRA_LIBS = efsl
-#EXTRA_LIBS = STR71Xlibstd
-EXTRA_LIBS =
-
-#Support for newlibc-lpc (file: libnewlibc-lpc.a)
-#NEWLIBLPC = -lnewlib-lpc
-
-MATH_LIB = 
-
-# CPLUSPLUS_LIB = -lstdc++
-
-
 # Linker flags.
 #  -Wl,...:     tell GCC to pass this to linker.
 #    -Map:      create map file
 #    --cref:    add cross reference to  map file
 LDFLAGS = -nostartfiles -nodefaultlibs -Wl,-Map=$(TARGET).map,--cref
-#LDFLAGS += -lc
-#LDFLAGS += $(NEWLIBLPC) $(MATH_LIB)
-#LDFLAGS += -lc -lgcc 
-LDFLAGS += $(CPLUSPLUS_LIB)
-LDFLAGS += $(patsubst %,-L%,$(EXTRA_LIBDIRS))
-LDFLAGS += $(patsubst %,-l%,$(EXTRA_LIBS))
 
 # Set Linker-Script Depending On Selected Memory and Controller
 ifeq ($(RUN_MODE),RAM_RUN)
 LDFLAGS +=-T$(LINKERSCRIPTPATH)/$(SUBMDL)-ram.ld
-else 
+else
 LDFLAGS +=-T$(LINKERSCRIPTPATH)/$(SUBMDL)-rom.ld
 endif
-
-# ---------------------------------------------------------------------------
-# Flash-Programming support using lpc21isp by Martin Maurer 
-# only for Philips LPC and Analog ADuC ARMs
-#
-# Settings and variables:
-#LPC21ISP = lpc21isp
-LPC21ISP = lpc21isp
-LPC21ISP_PORT = com1
-LPC21ISP_BAUD = 38400
-LPC21ISP_XTAL = 12000
-# other options:
-# * verbose output: -debug
-# * enter bootloader via RS232 DTR/RTS (only if hardware supports this
-#   feature - see Philips AppNote): -control
-LPC21ISP_OPTIONS = -control
-#LPC21ISP_OPTIONS += -debug
-# ---------------------------------------------------------------------------
-
-
-# Define directories, if needed.
-## DIRARM = c:/WinARM/
-## DIRARMBIN = $(DIRAVR)/bin/
-## DIRAVRUTILS = $(DIRAVR)/utils/bin/
 
 # Define programs and commands.
 SHELL = sh
@@ -311,33 +231,28 @@ COPY = cp
 MSG_ERRORS_NONE = Errors: none
 MSG_BEGIN = "-------- begin (mode: $(RUN_MODE)) --------"
 MSG_END = --------  end  --------
-MSG_SIZE_BEFORE = Size before: 
+MSG_SIZE_BEFORE = Size before:
 MSG_SIZE_AFTER = Size after:
-MSG_FLASH = Creating load file for Flash:
 MSG_EXTENDED_LISTING = Creating Extended Listing:
 MSG_SYMBOL_TABLE = Creating Symbol Table:
 MSG_LINKING = Linking:
 MSG_COMPILING = Compiling C:
 MSG_COMPILING_ARM = "Compiling C (ARM-only):"
-MSG_COMPILINGCPP = Compiling C++:
-MSG_COMPILINGCPP_ARM = "Compiling C++ (ARM-only):"
 MSG_ASSEMBLING = Assembling:
 MSG_ASSEMBLING_ARM = "Assembling (ARM-only):"
+MSG_COMPILING_DBGSTRUCTS = "Compiling debug structs:"
 MSG_CLEANING = Cleaning project:
 MSG_FORMATERROR = Can not handle output-format
-MSG_LPC21_RESETREMINDER = You may have to bring the target in bootloader-mode now.
 
 # Define all object files.
-COBJ      = $(SRC:.c=.o) 
+COBJ      = $(SRC:.c=.o)
 AOBJ      = $(ASRC:.S=.o)
 COBJARM   = $(SRCARM:.c=.o)
 AOBJARM   = $(ASRCARM:.S=.o)
-CPPOBJ    = $(CPPSRC:.cpp=.o) 
-CPPOBJARM = $(CPPSRCARM:.cpp=.o)
+CDEBUGOBJ = $(CDEBUGSRC:.c=.o)
 
 # Define all listing files.
-LST = $(ASRC:.S=.lst) $(ASRCARM:.S=.lst) $(SRC:.c=.lst) $(SRCARM:.c=.lst)
-LST += $(CPPSRC:.cpp=.lst) $(CPPSRCARM:.cpp=.lst)
+LST = $(ASRC:.S=.lst) $(ASRCARM:.S=.lst) $(SRC:.c=.lst) $(SRCARM:.c=.lst) $(CDEBUGSRC:.c=.lst)
 
 # Compiler flags to generate dependency files.
 ### GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
@@ -345,8 +260,8 @@ GENDEPFLAGS = -MD -MP -MF .dep/$(@F).d
 
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
-ALL_CFLAGS  = -mcpu=$(MCU) -march=armv4t -mtune=$(MCU) -marm -mabi=aapcs $(THUMB_IW) -I. $(CFLAGS) $(GENDEPFLAGS) -Wall
-ALL_ASFLAGS = -mcpu=$(MCU) -march=armv4t -mtune=$(MCU) -marm -mabi=aapcs $(THUMB_IW) -I. -x assembler-with-cpp $(ASFLAGS) -Wall
+ALL_CFLAGS  = -mcpu=$(MCU) -march=armv4t -mtune=$(MCU) -marm -mabi=aapcs -I. $(CFLAGS) $(GENDEPFLAGS) -Wall
+ALL_ASFLAGS = -mcpu=$(MCU) -march=armv4t -mtune=$(MCU) -marm -mabi=aapcs -I. -x assembler-with-cpp $(ASFLAGS) -Wall
 
 
 # Default target.
@@ -356,24 +271,24 @@ ifeq ($(FORMAT),ihex)
 build: elf hex lss sym
 hex: $(TARGET).hex
 IMGEXT=hex
-else 
+else
 ifeq ($(FORMAT),binary)
 build: elf bin lss sym
 bin: $(TARGET).bin
 IMGEXT=bin
-else 
+else
 ifeq ($(FORMAT),both)
 build: elf hex bin lss sym
 hex: $(TARGET).hex
 bin: $(TARGET).bin
-else 
+else
 $(error "$(MSG_FORMATERROR) $(FORMAT)")
 endif
 endif
 endif
 
 elf: $(TARGET).elf
-lss: $(TARGET).lss 
+lss: $(TARGET).lss
 sym: $(TARGET).sym
 
 # Eye candy.
@@ -400,51 +315,20 @@ sizeafter:
 
 
 # Display compiler version information.
-gccversion : 
+gccversion :
 	@$(CC) --version
-
-# Program the device.
-ifeq ($(FLASH_TOOL),UVISION)
-# Program the device with Keil's uVision (needs configured uVision-Workspace). 
-program: $(TARGET).hex
-	@echo
-	@echo "Programming with uVision"
-#	C:\Keil\uv3\Uv3.exe -f uvisionflash.Uv2 -ouvisionflash.txt
-	$(REMOVE) ../Common_WinARM/$(TARGET).hex
-	$(COPY) $(TARGET).hex ../Common_WinARM/
-	C:\Keil\uv3\Uv3.exe -f ..\Common_WinARM\uvisionflash.Uv2
-else
-ifeq ($(FLASH_TOOL),OPENOCD)
-# Program the device with Dominic Rath's OPENOCD in "batch-mode", needs cfg and "reset-script".
-program: $(TARGET).bin
-	@echo
-	@echo "Programming with OPENOCD"
-#	@echo "Copying load-file $(TARGET).bin to ../tools/main.bin directory"
-#	$(COPY) $(TARGET).bin ../tools/main.bin
-#	cd .. && cd tools && openocd_flash_go.cmd
-	openocd_flash_go.cmd
-else
-# Program the device.  - lpc21isp will not work for SAM7
-program: $(TARGET).hex
-	@echo
-	@echo $(MSG_LPC21_RESETREMINDER)
-	$(LPC21ISP) $(LPC21ISP_OPTIONS) $(LPC21ISP_FLASHFILE) $(LPC21ISP_PORT) $(LPC21ISP_BAUD) $(LPC21ISP_XTAL)
-endif
-endif
-
 
 # Create final output file (.hex) from ELF output file.
 %.hex: %.elf
 	@echo
 	@echo $(MSG_FLASH) $@
 	$(OBJCOPY) -O ihex $< $@
-	
+
 # Create final output file (.bin) from ELF output file.
 %.bin: %.elf
 	@echo
 	@echo $(MSG_FLASH) $@
 	$(OBJCOPY) -O binary $< $@
-
 
 # Create extended listing file from ELF output file.
 # testing: option -C
@@ -463,43 +347,35 @@ endif
 
 # Link: create ELF output file from object files.
 .SECONDARY : $(TARGET).elf
-.PRECIOUS : $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CPPOBJARM)
-%.elf:  $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CPPOBJARM)
+.PRECIOUS : $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CDEBUGOBJ)
+%.elf:  $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CDEBUGOBJ)
 	@echo
 	@echo $(MSG_LINKING) $@
-	$(CC) $(THUMB) $(ALL_CFLAGS) $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CPPOBJARM) --output $@ $(LDFLAGS)
-#	$(CPP) $(THUMB) $(ALL_CFLAGS) $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CPPOBJARM) --output $@ $(LDFLAGS)
+	$(CC) $(THUMB) $(ALL_CFLAGS) $(AOBJARM) $(AOBJ) $(COBJARM) $(COBJ) $(CPPOBJ) $(CDEBUGOBJ) --output $@ $(LDFLAGS)
 
 # Compile: create object files from C source files. ARM/Thumb
 $(COBJ) : %.o : %.c
 	@echo
 	@echo $(MSG_COMPILING) $<
-	$(CC) -c $(THUMB) $(ALL_CFLAGS) $(CONLYFLAGS) $< -o $@ 
+	$(CC) -c $(THUMB) $(ALL_CFLAGS) $(CONLYFLAGS) $< -o $@
 
 # Compile: create object files from C source files. ARM-only
 $(COBJARM) : %.o : %.c
 	@echo
 	@echo $(MSG_COMPILING_ARM) $<
-	$(CC) -c $(ALL_CFLAGS) $(CONLYFLAGS) $< -o $@ 
+	$(CC) -c $(ALL_CFLAGS) $(CONLYFLAGS) $< -o $@
 
 # Compile: create object files from C++ source files. ARM/Thumb
 $(CPPOBJ) : %.o : %.cpp
 	@echo
 	@echo $(MSG_COMPILINGCPP) $<
-	$(CPP) -c $(THUMB) $(ALL_CFLAGS) $(CPPFLAGS) $< -o $@ 
+	$(CPP) -c $(THUMB) $(ALL_CFLAGS) $(CPPFLAGS) $< -o $@
 
-# Compile: create object files from C++ source files. ARM-only
-$(CPPOBJARM) : %.o : %.cpp
+# Compile: debug structs
+$(CDEBUGOBJ) : %.o : %.c
 	@echo
-	@echo $(MSG_COMPILINGCPP_ARM) $<
-	$(CPP) -c $(ALL_CFLAGS) $(CPPFLAGS) $< -o $@ 
-
-
-# Compile: create assembler files from C source files. ARM/Thumb
-## does not work - TODO - hints welcome
-##$(COBJ) : %.s : %.c
-##	$(CC) $(THUMB) -S $(ALL_CFLAGS) $< -o $@
-
+	@echo $(MSG_COMPILING_DBGSTRUCTS) $<
+	@$(CC) -c $(ALL_CFLAGS) $(CFLAGS) $< -o $@
 
 # Assemble: create object files from assembler source files. ARM/Thumb
 $(AOBJ) : %.o : %.S
@@ -536,17 +412,15 @@ clean_list :
 	$(REMOVE) $(CPPOBJ)
 	$(REMOVE) $(AOBJ)
 	$(REMOVE) $(COBJARM)
-	$(REMOVE) $(CPPOBJARM)
+	$(REMOVE) $(CDEBUGOBJ)
+	$(REMOVE) $(CDEBUGSRC:.c=.s)
+	$(REMOVE) $(CDEBUGSRC:.c=.d)
 	$(REMOVE) $(AOBJARM)
 	$(REMOVE) $(LST)
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) $(SRCARM:.c=.s)
 	$(REMOVE) $(SRCARM:.c=.d)
-	$(REMOVE) $(CPPSRC:.cpp=.s) 
-	$(REMOVE) $(CPPSRC:.cpp=.d)
-	$(REMOVE) $(CPPSRCARM:.cpp=.s) 
-	$(REMOVE) $(CPPSRCARM:.cpp=.d)
 	$(REMOVEDIR) .dep | exit 0
 
 

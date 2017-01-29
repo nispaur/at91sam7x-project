@@ -23,6 +23,9 @@ src/
 .gdb_history
 .gdbinit
 
+# OpenOCD logs
+*.log
+
 # Files being edited
 *.swp
 ~
