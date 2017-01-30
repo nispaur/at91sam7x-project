@@ -22,6 +22,7 @@ src/
 # GDB Files
 .gdb_history
 .gdbinit
+!gdbinit.d/
 
 # OpenOCD logs
 *.log
