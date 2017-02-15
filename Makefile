@@ -1,49 +1,10 @@
 # Hey Emacs, this is a -*- makefile -*-
-#
-# WinARM template makefile
-# by Martin Thomas, Kaiserslautern, Germany
-# <eversmith@heizung-thomas.de>
-#
-# based on the WinAVR makefile written by Eric B. Weddington, Jörg Wunsch, et al.
-# Released to the Public Domain
-# Please read the make user manual!
-#
-#
-# On command line:
-#
-# make all = Make software.
-#
-# make clean = Clean out built project files.
-#
-# make program = Download the hex file to the device
-#
-# (TODO: make filename.s = Just compile filename.c into the assembler code only)
-#
-# To rebuild project do "make clean" then "make all".
-#
-# Changelog:
-# - 17. Feb. 2005  - added thumb-interwork support (mth)
-# - 28. Apr. 2005  - added C++ support (mth)
-# - 29. Arp. 2005  - changed handling for lst-Filename (mth)
-# -  1. Nov. 2005  - exception-vector placement options (mth)
-# - 15. Nov. 2005  - added library-search-path (EXTRA_LIB...) (mth)
-# -  2. Dec. 2005  - fixed ihex and binary file extensions (mth)
-# - 22. Feb. 2006  - added AT91LIBNOWARN setting (mth)
-# - 19. Apr. 2006  - option FLASH_TOOL (default lpc21isp); variable IMGEXT (mth)
-# - 23. Jun. 2006  - option USE_THUMB_MODE -> THUMB/THUMB_IW
-# -  3. Aug. 2006  - added -ffunction-sections -fdata-sections to CFLAGS
-#                    and --gc-sections to LDFLAGS. Only available for gcc 4 (mth)
-# -  4. Aug. 2006  - pass SUBMDL-define to frontend (mth)
-# - 11. Nov. 2006  - FLASH_TOOL-config, TCHAIN-config (mth)
-# - 28. Mar. 2007  - remove .dep-Directory with rm -r -f and force "no error"
-# - 24. Apr. 2007  - added "both" option for format (.bin and .hex)
-# - 20. Aug. 2007  - extraincdirs in asflags, passing a "board"-define
 
-# Target file name (without extension).
+# Nom du fichier executable
 TARGET = main
 
-# Toolchain prefix (i.e arm-elf -> arm-elf-gcc.exe)
-TCHAIN = arm-none-eabi
+# Prefixe de la chaine de compilation
+TCHAIN = arm-eabi
 
 #USE_THUMB_MODE = YES
 USE_THUMB_MODE = NO
@@ -56,26 +17,15 @@ BOARD    = OLIMEX_SAM7_P
 ## Create RAM-Image (debugging)
 RUN_MODE=RAM_RUN
 
-# Trace level debug (5)
-TRACE_LEVEL=5
-
-
 # List C source files here. (C dependencies are automatically generated.)
 # use file-extension c for "c-only"-files
-#SRC  = src/$(TARGET).c
-SRC =
+# SRC  =
 
 # Place extra source files from src/ that need to be compiled with main.c here:
 # SRC += $(addprefix src/, )
 
-# Place utility libraries (stdio.c, math.c..) here:
-# SRC += $(addprefix util/, )
-
-# Place system libraries (pio/pio.c, spi/spi.c..) here:
-# SRC += $(addprefix sys/, lowlevel.c)
-
 # Debug structs for GDB Dashboard
-CDEBUGSRC = $(wildcard sys/debug/*.c)
+# CDEBUGSRC = $(wildcard sys/debug/*.c)
 
 
 # List Assembler source files here.
@@ -85,8 +35,7 @@ CDEBUGSRC = $(wildcard sys/debug/*.c)
 # Even though the DOS/Win* filesystem matches both .s and .S the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-# ASRC = src/$(TARGET).S
-ASRC =
+ASRC = src/$(TARGET).S
 
 # Ajouter vos sources assembleur ici (par defaut main.S)
 # Par exemple pour ajouter truc.S et truc2.S situés dans le répertoire src/
@@ -94,7 +43,7 @@ ASRC =
 #
 # Pour ajouter tous les fichiers .S du répertoire src/ (comportement par defaut)
 # Attention, compile tous les fichiers présents dans ce répertoire !
-ASRC += $(wildcard src/*.S)
+ASRC +=
 
 # List Assembler source files here which must be assembled in ARM-Mode..
 ASRCARM = sys/reset.S sys/irqHandler.S
@@ -431,4 +380,3 @@ clean_list :
 # Listing of phony targets.
 .PHONY : all begin finish end sizebefore sizeafter gccversion \
 build elf hex bin lss sym clean clean_list program
-

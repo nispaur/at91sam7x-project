@@ -38,11 +38,11 @@ end
 
 define connect
     if $argc == 0
-	#target extended-remote localhost:3333
-    target remote | openocd -f openocd.cfg -c 'gdb_port pipe'
+	  # target extended-remote localhost:8888
+    target remote | openocd -s /usr/local/arm/share/openocd/scripts -f openocd.cfg
     end
     if $argc == 1
-	target extended-remote $arg0:3333
+	target extended-remote $arg0:8888
     end
     if $argc == 2
 	target extended-remote $arg0:$arg1
