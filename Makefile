@@ -29,24 +29,24 @@ RUN_MODE=RAM_RUN
 
 
 # List Assembler source files here.
-# Make them always end in a capital .S.  Files ending in a lowercase .s
+# Make them always end in a capital .s.  Files ending in a lowercase .S
 # will not be considered source files but generated files (assembler
 # output from the compiler), and will be deleted upon "make clean"!
-# Even though the DOS/Win* filesystem matches both .s and .S the same,
+# Even though the DOS/Win* filesystem matches both .S and .s the same,
 # it will preserve the spelling of the filenames, and gcc itself does
 # care about how the name is spelled on its command-line.
-ASRC = src/$(TARGET).S
+ASRC = src/$(TARGET).s
 
-# Ajouter vos sources assembleur ici (par defaut main.S)
-# Par exemple pour ajouter truc.S et truc2.S situés dans le répertoire src/
-# ASRC += $(addprefix, src/, truc.S truc2.S)
+# Ajouter vos sources assembleur ici (par defaut main.s)
+# Par exemple pour ajouter truc.s et truc2.s situés dans le répertoire src/
+# ASRC += $(addprefix, src/, truc.s truc2.s)
 #
-# Pour ajouter tous les fichiers .S du répertoire src/ (comportement par defaut)
+# Pour ajouter tous les fichiers .s du répertoire src/ (comportement par defaut)
 # Attention, compile tous les fichiers présents dans ce répertoire !
 ASRC +=
 
 # List Assembler source files here which must be assembled in ARM-Mode..
-ASRCARM = sys/reset.S sys/irqHandler.S
+ASRCARM = sys/reset.s sys/irqHandler.s
 
 ## Output format. (can be ihex or binary or both)
 ## (binary i.e. for openocd and SAM-BA, hex i.e. for lpc21isp and uVision)
@@ -146,7 +146,7 @@ CPPFLAGS =
 #  -Wa,...:    tell GCC to pass this to the assembler.
 #  -ahlns:     create listing
 #  -g$(DEBUG): have the assembler create line number information
-ASFLAGS = $(ADEFS) -D__ASSEMBLY__ -Wa,-adhlns=$(<:.S=.lst),-g$(DEBUG)
+ASFLAGS = $(ADEFS) -D__ASSEMBLY__ -Wa,-adhlns=$(<:.s=.lst),-g$(DEBUG)
 ASFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 
 # Linker flags.
@@ -195,13 +195,13 @@ MSG_FORMATERROR = Can not handle output-format
 
 # Define all object files.
 COBJ      = $(SRC:.c=.o)
-AOBJ      = $(ASRC:.S=.o)
+AOBJ      = $(ASRC:.s=.o)
 COBJARM   = $(SRCARM:.c=.o)
-AOBJARM   = $(ASRCARM:.S=.o)
+AOBJARM   = $(ASRCARM:.s=.o)
 CDEBUGOBJ = $(CDEBUGSRC:.c=.o)
 
 # Define all listing files.
-LST = $(ASRC:.S=.lst) $(ASRCARM:.S=.lst) $(SRC:.c=.lst) $(SRCARM:.c=.lst) $(CDEBUGSRC:.c=.lst)
+LST = $(ASRC:.s=.lst) $(ASRCARM:.s=.lst) $(SRC:.c=.lst) $(SRCARM:.c=.lst) $(CDEBUGSRC:.c=.lst)
 
 # Compiler flags to generate dependency files.
 ### GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
@@ -327,14 +327,14 @@ $(CDEBUGOBJ) : %.o : %.c
 	@$(CC) -c $(ALL_CFLAGS) $(CFLAGS) $< -o $@
 
 # Assemble: create object files from assembler source files. ARM/Thumb
-$(AOBJ) : %.o : %.S
+$(AOBJ) : %.o : %.s
 	@echo
 	@echo $(MSG_ASSEMBLING) $<
 	$(CC) -c $(THUMB) $(ALL_ASFLAGS) $< -o $@
 
 
 # Assemble: create object files from assembler source files. ARM-only
-$(AOBJARM) : %.o : %.S
+$(AOBJARM) : %.o : %.s
 	@echo
 	@echo $(MSG_ASSEMBLING_ARM) $<
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
@@ -362,13 +362,13 @@ clean_list :
 	$(REMOVE) $(AOBJ)
 	$(REMOVE) $(COBJARM)
 	$(REMOVE) $(CDEBUGOBJ)
-	$(REMOVE) $(CDEBUGSRC:.c=.s)
+	$(REMOVE) $(CDEBUGSRC:.c=.S)
 	$(REMOVE) $(CDEBUGSRC:.c=.d)
 	$(REMOVE) $(AOBJARM)
 	$(REMOVE) $(LST)
-	$(REMOVE) $(SRC:.c=.s)
+	$(REMOVE) $(SRC:.c=.S)
 	$(REMOVE) $(SRC:.c=.d)
-	$(REMOVE) $(SRCARM:.c=.s)
+	$(REMOVE) $(SRCARM:.c=.S)
 	$(REMOVE) $(SRCARM:.c=.d)
 	$(REMOVEDIR) .dep | exit 0
 
