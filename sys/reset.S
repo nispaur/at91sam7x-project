@@ -12,7 +12,8 @@
     .equ BT1, 1<<24
     .equ BT2, 1<<25
 
-    .global _start
+    .extern _start
+    .global _setup
     .global _vec_reset
     .global _vec_undef
     .global _vec_swi
@@ -53,7 +54,7 @@
     .arm
     .align
 
-_start:
+_setup:
     @ Vecteurs d'exception ARM
     @ http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0210c/CIHEHHJJ.html
 __vec_reset:    ldr pc, =reset              @ 0x0  Reset
@@ -159,7 +160,7 @@ rstloop:
     bic r1,r1,#0x80
     msr CPSR,r1
 
-    bl   _main      @ On branch sur main
+    bl   _start      @ On branch sur main
 
 endloop:
     b    endloop

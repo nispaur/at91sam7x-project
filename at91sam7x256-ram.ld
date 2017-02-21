@@ -9,7 +9,7 @@ MEMORY
 __FIRST_IN_RAM = ORIGIN(DATA);
 __TOP_STACK    = 0x0020ff00;
 
-ENTRY(_start)
+ENTRY(_setup)
 
 /* Section Definitions */
 
