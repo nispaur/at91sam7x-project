@@ -1,5 +1,5 @@
 /* ----------------------------------------------------------------------------
- *         ATMEL Microcontroller Software Support 
+ *         ATMEL Microcontroller Software Support
  * ----------------------------------------------------------------------------
  * Copyright (c) 2008, Atmel Corporation
  *
@@ -30,10 +30,10 @@
 //------------------------------------------------------------------------------
 /// \dir
 /// !Purpose
-/// 
+///
 /// Definition and functions for using AT91SAM7X-related features, such
 /// has PIO pins, memories, etc.
-/// 
+///
 /// !Usage
 /// -# The code for booting the board is provided by board_cstartup.S and
 ///    board_lowlevel.c.
@@ -41,21 +41,21 @@
 ///    components, see board.h.
 /// -# For manipulating memories (remapping, SDRAM, etc.), see board_memories.h.
 //------------------------------------------------------------------------------
- 
+
 //------------------------------------------------------------------------------
 /// \unit
 /// !Purpose
-/// 
+///
 /// Definition of AT91SAM7X-EK characteristics, AT91SAM7X-dependant PIOs and
 /// external components interfacing.
-/// 
+///
 /// !Usage
 /// -# For operating frequency information, see "SAM7X-EK - Operating frequencies".
 /// -# For using portable PIO definitions, see "SAM7X-EK - PIO definitions".
 /// -# Several USB definitions are included here (see "SAM7X-EK - USB device").
 //------------------------------------------------------------------------------
 
-#ifndef BOARD_H 
+#ifndef BOARD_H
 #define BOARD_H
 
 //------------------------------------------------------------------------------
@@ -74,6 +74,8 @@
 #else
     #error Board does not support the specified chip.
 #endif
+
+/* Standard definitions of Mode bits and Interrupt (I & F) flags in PSRs (program status registers) */
 
 //------------------------------------------------------------------------------
 //         Definitions
@@ -96,7 +98,7 @@
 /// \page "SAM7X-EK - Operating frequencies"
 /// This page lists several definition related to the board operating frequency
 /// (when using the initialization done by board_lowlevel.c).
-/// 
+///
 /// !Definitions
 /// - BOARD_MAINOSC
 /// - BOARD_MCK
@@ -125,7 +127,7 @@
 /// \page "SAM7X-EK - USB device"
 /// This page lists constants describing several characteristics (controller
 /// type, D+ pull-up type, etc.) of the USB device controller of the chip/board.
-/// 
+///
 /// !Constants
 /// - BOARD_USB_UDP
 /// - BOARD_USB_PULLUP_ALWAYSON
@@ -162,14 +164,14 @@
 ///
 /// !DBGU
 /// - PINS_DBGU
-/// 
+///
 /// !LEDs
 /// - PIN_LED_0
 /// - PIN_LED_1
 /// - PIN_LED_2
 /// - PIN_LED_3
 /// - PINS_LEDS
-/// 
+///
 /// !Push buttons
 /// - PIN_PUSHBUTTON_1
 /// - PIN_PUSHBUTTON_2
@@ -197,12 +199,12 @@
 /// - JOYSTICK_LEFT
 /// - JOYSTICK_RIGHT
 /// - JOYSTICK_LCLIC, JOYSTICK_PUSH
-/// 
+///
 /// !USART0
 /// - PIN_USART0_RXD
 /// - PIN_USART0_TXD
 /// - PIN_USART0_SCK
-/// 
+///
 /// !SPI0
 /// - PIN_SPI0_MISO
 /// - PIN_SPI0_MOSI
@@ -220,7 +222,7 @@
 /// - PIN_PWM_LED1
 /// - CHANNEL_PWM_LED0
 /// - CHANNEL_PWM_LED1
-/// 
+///
 /// !ADC
 /// - PIN_ADC_ADC0
 /// - PIN_ADC_ADC1
@@ -303,11 +305,9 @@
 /// List of all Joystick click definitions
 #define PINS_JOYSTICK_CLIC  PIN_JOYSTICK_LCLIC
 /// List of all Joystick movement direction definitions
-#define PINS_JOYSTICK_MOVE  PIN_JOYSTICK_UP, PIN_JOYSTICK_DOWN, \
-                            PIN_JOYSTICK_LEFT, PIN_JOYSTICK_RIGHT
+#define PINS_JOYSTICK_MOVE  PIN_JOYSTICK_UP, PIN_JOYSTICK_DOWN,  PIN_JOYSTICK_LEFT, PIN_JOYSTICK_RIGHT
 /// List of all Joystick definitions
-#define PINS_JOYSTICK  PINS_JOYSTICK_MOVE, \
-                       PINS_JOYSTICK_CLIC
+#define PINS_JOYSTICK  PINS_JOYSTICK_MOVE,  PINS_JOYSTICK_CLIC
 /// Joystick UP index.
 #define JOYSTICK_UP         0
 /// Joystick DOWN index.
@@ -375,8 +375,7 @@
 #define CHANNEL_PWM_LED1 2
 
 /// SSC transmitter pins definition.
-#define PINS_SSC_TX { (1 << 21) | (1 << 22) | (1 << 23), \
-                      AT91C_BASE_PIOB, AT91C_ID_PIOB, PIO_PERIPH_A, PIO_DEFAULT}
+#define PINS_SSC_TX { (1 << 21) | (1 << 22) | (1 << 23),  AT91C_BASE_PIOB, AT91C_ID_PIOB, PIO_PERIPH_A, PIO_DEFAULT}
 
 /// TWI pins definition.
 #define PINS_TWI  {0x00000C00, AT91C_BASE_PIOA, AT91C_ID_PIOA, PIO_PERIPH_A, PIO_DEFAULT}
@@ -393,7 +392,7 @@
 //------------------------------------------------------------------------------
 /// \page "SAM7X-EK - External components"
 /// This page lists definitions related to external on-board components.
-/// 
+///
 /// !AT45 Dataflash Card
 /// - BOARD_AT45_A_SPI_BASE
 /// - BOARD_AT45_A_SPI_ID
@@ -502,15 +501,11 @@
 // We force the address
 //(1<<5) PHY address 0, (1<<6) PHY address 1, (1<<13) PHY address 2,
 //(1<<14) PHY address 3, (1<<4) PHY address 4
-#define BOARD_EMAC_PINS_PHYAD {(1<<6)|(1<<13)|(1<<14)|(1<<4),\
-                               AT91C_BASE_PIOB, AT91C_ID_PIOB, PIO_OUTPUT_0, PIO_DEFAULT},\
-                              {(1<<5), AT91C_BASE_PIOB, AT91C_ID_PIOB, PIO_OUTPUT_1, PIO_DEFAULT}
+#define BOARD_EMAC_PINS_PHYAD {(1<<6)|(1<<13)|(1<<14)|(1<<4),    AT91C_BASE_PIOB, AT91C_ID_PIOB, PIO_OUTPUT_0, PIO_DEFAULT},                 {(1<<5), AT91C_BASE_PIOB, AT91C_ID_PIOB, PIO_OUTPUT_1, PIO_DEFAULT}
 #define BOARD_EMAC_PIN_10BT   {(1<<17), AT91C_BASE_PIOB, AT91C_ID_PIOB, PIO_OUTPUT_0, PIO_DEFAULT}
 #define BOARD_EMAC_PIN_RPTR   {(1<< 7), AT91C_BASE_PIOB, AT91C_ID_PIOB, PIO_OUTPUT_0, PIO_DEFAULT}
 /// The PIN Configure list for EMAC on power up reset (MII)
-#define BOARD_EMAC_RST_PINS BOARD_EMAC_PINS_PHYAD, \
-                            BOARD_EMAC_PIN_TEST, BOARD_EMAC_PIN_RMII, \
-                            BOARD_EMAC_PIN_10BT, BOARD_EMAC_PIN_RPTR
+#define BOARD_EMAC_RST_PINS BOARD_EMAC_PINS_PHYAD,  BOARD_EMAC_PIN_TEST, BOARD_EMAC_PIN_RMII, BOARD_EMAC_PIN_10BT, BOARD_EMAC_PIN_RPTR
 
 /// The runtime pin configure list for EMAC
 #define BOARD_EMAC_RUN_PINS BOARD_EMAC_PINS
@@ -520,7 +515,7 @@
 /// \page "SAM7X-EK - External components"
 /// This page lists the definitions related to external on-board components
 /// located in the board.h file for the SAM7X-EK.
-/// 
+///
 /// !ISO7816
 /// - PIN_SMARTCARD_CONNECT
 /// - PIN_ISO7816_RSTMC

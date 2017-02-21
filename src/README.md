@@ -21,7 +21,7 @@ Placer dans ce dossier les sources du programme (fichiers *.c ou .S).
     msr   CPSR, r1
     
     ; Branchement vers la fonction principale
-    b     main 
+    b     _main 
 ```
 
 # Compilation
@@ -57,5 +57,5 @@ Une fois le [`Makefile`][makefile] configuré, compiler l'executable au format `
 
 > Pour plus d'informations concernant la compilation et l'execution du programme, consulter le manuel utilisateur de GDB Dashboard.
 
-[reset]: ../src/reset.S
+[reset]: ../sys/reset.S
 [makefile]: ../Makefile

@@ -1,7 +1,7 @@
 @ reset.s : Code d'initialisation de la carte avancée
 @ Basé en partie sur le crt0.s de la libc et de la page suivante
 @ https://www.sparkfun.com/datasheets/DevTools/SAM7/at91sam7%20serial%20communications.pdf
-    
+
     .include "sys/carte.inc"
 
     .equ JS_U, 1<<9
@@ -12,7 +12,8 @@
     .equ BT1, 1<<24
     .equ BT2, 1<<25
 
-    .global _start
+    .extern _start
+    .global _setup
     .global _vec_reset
     .global _vec_undef
     .global _vec_swi
@@ -26,7 +27,7 @@
     .global swiHandler
     .global prefAbrtHandler
     .global dataAbortHandler
-    .global irqHandler
+    .extern irqHandler
 
     .global undefExceptionMsg
 
@@ -53,7 +54,7 @@
     .arm
     .align
 
-_start:
+_setup:
     @ Vecteurs d'exception ARM
     @ http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.ddi0210c/CIHEHHJJ.html
 __vec_reset:    ldr pc, =reset              @ 0x0  Reset
@@ -83,16 +84,16 @@ cont:
     ldr     r0, =_stack_end
 
     @ Pour info, CPSR_c -> permet d'éditer directement les champs de controle du CPSR
-    msr     CPSR_c, #(ARM_MODE_UND|I_BIT|F_BIT) @ Passage en contexte Undefined Instruction
-    mov     sp, r0                                                          @ Mise en place de la stack (0x210000)
+    msr     CPSR_c, #(ARM_MODE_UND|I_BIT|F_BIT)             @ Passage en contexte Undefined Instruction
+    mov     sp, r0                                          @ Mise en place de la stack (0x210000)
     sub     r0, r0, #UND_STACK_SIZE                         @ Soustraction de la stack au total
 
     msr     CPSR_c, #(ARM_MODE_ABT|I_BIT|F_BIT) @ Passage en contexte Data Abort
-    mov     sp, r0                                                          @ Mise en place stack
+    mov     sp, r0                                          @ Mise en place stack
     sub     r0, r0, #ABT_STACK_SIZE                         @ Soustraction
 
     msr     CPSR_c, #(ARM_MODE_FIQ|I_BIT|F_BIT) @ Passage en mode Fast Interrupt
-    mov     sp, r0                                                          @ Idem plus haut
+    mov     sp, r0                                          @ Idem plus haut
     sub     r0, r0, #FIQ_STACK_SIZE
 
     msr     CPSR_c, #(ARM_MODE_IRQ|I_BIT|F_BIT) @ Mode IRQ..
@@ -137,7 +138,7 @@ rstloop:
     strlo   r0, [r1], #4
     blo     rstloop
 
-    @ Activation des pins joystick/boutons sur le PIO 
+    @ Activation des pins joystick/boutons sur le PIO
     ldr r12, =PIOA_BASE
     ldr r0, =JS_U|JS_D|JS_L|JS_R|JS_P
     str r0, [r12, #PIO_IDR]
@@ -159,95 +160,11 @@ rstloop:
     bic r1,r1,#0x80
     msr CPSR,r1
 
-    b main @ mov pc, lr
+    bl   _start      @ On branch sur main
 
+endloop:
+    b    endloop
 
-/* =======================================================================  */
-/* Function: AT91F_Irq_Handler                                              */
-/*                                                                          */
-/* This IRQ_Handler supports nested interrupts (an IRQ interrupt can itself */
-/* be interrupted).                                                         */
-/*                                                                          */
-/* This handler re-enables interrupts and switches to "Supervisor" mode to  */
-/* prevent any corruption to the link and IP registers.                     */
-/*                                                                          */
-/* The Interrupt Vector Register (AIC_IVR) is read to determine the address */
-/* of the required interrupt service routine. The ISR routine can be a      */
-/* standard C function since this handler minds all the save/restore        */
-/* protocols.                                                               */
-/*                                                                          */
-/*                                                                          */
-/* Programmers:                                                             */
-/*--------------------------------------------------------------------------*/
-/* ATMEL Microcontroller Software Support - ROUSSET -                       */
-/*--------------------------------------------------------------------------*/
-/* DISCLAIMER: THIS SOFTWARE IS PROVIDED BY ATMEL "AS IS" AND ANY EXPRESS   */
-/* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED        */
-/* WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND      */
-/* NON-INFRINGEMENT ARE DISCLAIMED. IN NO EVENT SHALL ATMEL BE LIABLE FOR   */
-/* ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR                 */
-/* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT        */
-/* OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR       */
-/* BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,    */
-/* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE     */
-/* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,        */
-/* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.                       */
-/* File source : Cstartup.s79                                               */
-/* Object : Generic CStartup to AT91SAM7S256                                */
-/* 1.0 09/May/06 JPP : Creation                                             */
-/*                                                                          */
-/*                                                                          */
-/* Note: taken from Atmel web site (www.at91.com)                           */
-/* Keil example project: AT91SAM7S-Interrupt_SAM7X                          */
-/* ======================================================================== */
-irqHandler:
-    /* Manage Exception Entry */
-
-    /* Adjust and save LR_irq in IRQ stack */
-    sub     lr, lr, #4
-    stmfd   sp!, {lr}
-
-    /* Save r0 and SPSR (need to be saved for nested interrupt) */
-    mrs     r14, SPSR
-    stmfd   sp!, {r0, r14}
-
-    /* Write in the IVR to support Protect Mode */
-    /* No effect in Normal Mode */
-    /* De-assert the NIRQ and clear the source in Protect Mode */
-    ldr     r14, =AIC_BASE
-    ldr     r0,  [r14, #AIC_IVR]
-    str     r14, [r14, #AIC_IVR]
-
-    /* Enable Interrupt and Switch in Supervisor Mode */
-    msr     CPSR_c, #ARM_MODE_SVC
-
-    /* Save scratch/used registers and LR in User Stack */
-    stmfd   sp!, {r1-r3, r12, r14}
-
-    /* Branch to the routine pointed by the AIC_IVR */
-    mov     r14, pc
-    bx      r0
-
-    /* Manage Exception Exit */
-
-    /* Restore scratch/used registers and LR from User Stack */
-    ldmia   sp!, {r1-r3, r12, r14}
-
-    /* Disable Interrupt and switch back in IRQ mode */
-    msr     CPSR_c, #(I_BIT | ARM_MODE_IRQ)
-
-    /* Mark the End of Interrupt on the AIC */
-    ldr     r14, =AIC_BASE
-    str     r14, [r14, #AIC_EOICR]
-
-    /* Restore SPSR_irq and r0 from IRQ stack */
-    ldmia   sp!, {r0, r14}
-    msr     SPSR_cxsf, r14  @ ??????????????????
-
-    /* Restore adjusted LR_irq from IRQ stack directly in the PC */
-    ldmia   sp!, {pc}^
-
-        
 @ Segment de données
         .data
         .align  4
@@ -277,14 +194,14 @@ prefAbrtHandler:
 prefAbrtLoop:
         b       prefAbrtLoop
 
-dataAbrtHandler:
+dataAbortHandler:
         stmfd   sp!, {r1,lr}
-        @ldr    r9, =0xDEADC0DE
+        @ldr    r9, =0xDEADC0DE @ Le genre d'instructions qui risquent de vous faire tomber ici
         ldr     r1, =dataAbrtExceptMsg
         bl      putstring
 dataAbrtLoop:
-
-        ldmfd   sp!, {r1,lr}^
+        b       dataAbrtLoop    @ Commenter cette ligne pour ignorer les data abort et poursuivre l'execution du programme malgré tout (non recommandé)
+        ldmfd   sp!, {r1,pc}^
 
 putchar:
         stmfd       sp!,{r1, r2}

@@ -9,7 +9,7 @@ MEMORY
 __FIRST_IN_RAM = ORIGIN(DATA);
 __TOP_STACK    = 0x0020ff00;
 
-ENTRY(_start)
+ENTRY(_setup)
 
 /* Section Definitions */
 
@@ -17,7 +17,7 @@ SECTIONS
 {
 	/* first section is .text which is used for code */
 	. = ORIGIN(DATA);
-	
+
 	.text :
 	{
 		KEEP(*(.vectorg))
@@ -33,11 +33,11 @@ SECTIONS
 		*(.gnu.linkonce.r.*)
 		. = ALIGN(4);
 	} >DATA
-	
+
 	. = ALIGN(4);
 
 	/* .ctors .dtors are used for c++ constructors/destructors */
-	
+
 	.ctors :
 	{
 		PROVIDE(__ctors_start__ = .);
@@ -48,12 +48,12 @@ SECTIONS
 
 	.dtors :
 	{
-		PROVIDE(__dtors_start__ = .); 
+		PROVIDE(__dtors_start__ = .);
 		KEEP(*(SORT(.dtors.*)))
 		KEEP(*(.dtors))
 		PROVIDE(__dtors_end__ = .);
 	} >DATA
-	
+
 	. = ALIGN(4);
    	__exidx_start = .;
     .ARM.exidx   : { *(.ARM.exidx* .gnu.linkonce.armexidx.*) } >DATA
@@ -77,12 +77,12 @@ SECTIONS
 	*(.gnu.linkonce.d.*)
 	. = ALIGN(4);
 	} >DATA
-	
+
 	. = ALIGN(4);
-	
+
 	_edata = . ;
 	PROVIDE (edata = .);
-	
+
 	/* .bss section which is used for uninitialized data */
 	.bss (NOLOAD) :
 	{
@@ -94,7 +94,7 @@ SECTIONS
 	*(COMMON)
 	. = ALIGN(4);
 	} >DATA
-	
+
 	__bss_start = .;
     .bss :
     {
@@ -106,12 +106,12 @@ SECTIONS
 
     } >DATA /* >EXEC AT>LOAD */
 	. = ALIGN(4);
-	
+
 	__bss_end__ = . ;
-	
+
 	_end = .;
 	PROVIDE (end = .);
-	
+
 	/* Stabs debugging sections.  */
 	.stab          0 : { *(.stab) }
 	.stabstr       0 : { *(.stabstr) }
